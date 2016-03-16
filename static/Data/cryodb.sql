@@ -1,47 +1,77 @@
--- run the following command to create the database:
--- mysql -u -"insert username here" -p < "cryodb.sql"
+-- MySQL dump 10.13  Distrib 5.5.47, for debian-linux-gnu (x86_64)
+--
+-- Host: localhost    Database: cryodb
+-- ------------------------------------------------------
+-- Server version	5.5.47-0ubuntu0.14.04.1
 
--- to populate the db enter the following command:
--- mysql -u "insert username here" -p cryodb < populate_cryodb.sql
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- to dump your schema n such to a file run this command in command prompt:
--- mysqldump -u "insert username here" -p cryodb > schemadump.txt
+--
+-- Table structure for table `tours`
+--
 
--- To have this file run and dump the outputs with commands run the following in a command line:
--- mysql -t -vvv -u "insert username here" -p < querylist.sql > queryresults.txt
+DROP TABLE IF EXISTS `tours`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tours` (
+  `name` varchar(15) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- Note: the -t flag gives you the interactive print (boxes and stuff) and the -vvv prints the commands
+--
+-- Dumping data for table `tours`
+--
 
--- Resources: http://optlab.mcmaster.ca/jiangm5/cs3db3/Tutorial%20(JAN%2023&25)/E-R%20example.pdf
--- http://i.stack.imgur.com/q40BX.jpg
+LOCK TABLES `tours` WRITE;
+/*!40000 ALTER TABLE `tours` DISABLE KEYS */;
+INSERT INTO `tours` VALUES ('Alaska'),('Antarctica'),('Greenland'),('Iceland');
+/*!40000 ALTER TABLE `tours` ENABLE KEYS */;
+UNLOCK TABLES;
 
+--
+-- Table structure for table `waypoints`
+--
 
-drop database if exists cryodb;
-create database cryodb;
+DROP TABLE IF EXISTS `waypoints`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `waypoints` (
+  `name` varchar(15) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `tour` varchar(15) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `latitude` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `longitude` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`name`,`tour`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-use cryodb;
+--
+-- Dumping data for table `waypoints`
+--
 
-drop table if exists flightpathEntry;
-drop table if exists waypoint;
+LOCK TABLES `waypoints` WRITE;
+/*!40000 ALTER TABLE `waypoints` DISABLE KEYS */;
+INSERT INTO `waypoints` VALUES ('Anchorage','Alaska','58.271403','-134.443284','This place cold.'),('Fairbanks','Alaska','64.833965','-147.657242','This place is fair.'),('Greenland-2','Greenland','70.9208667','-40.170726','This is the 2nd location in Greenland'),('Greenland-3','Greenland','75.9208667','-40.170726','Location 3'),('Juneau','Alaska','61.195141','-149.809919','This place also cold.');
+/*!40000 ALTER TABLE `waypoints` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-create table waypoint
-(
-	waypoint_ID		int,
-	waypoint_name	varchar(15),
-	waypoint_lat	varchar(15),
-	waypoint_long	varchar(15),
-	waypoint_desc	Text,
-	primary key (waypoint_ID)
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
-);
-
-create table  flightpathEntry
-(
-	flightpathEntry_ID	int,
-	flightpath_name	varchar(15),
-	waypoint_ID		int,
-	primary key (flightpathEntry_ID),
-	foreign key (waypoint_ID) references waypoint(waypoint_ID)
-		on delete set null
-
-);
+-- Dump completed on 2016-03-16 19:52:53

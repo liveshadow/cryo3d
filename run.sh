@@ -1,4 +1,7 @@
-
+#Dump data from mysql before killing all of the containers
+#Helps keep data persistent
+docker exec -it db sudo sh -c "mysqldump cryodb > /var/lib/mysql/cryodb.sql"
+docker cp db:/var/lib/mysql/cryodb.sql ./static/Data/cryodb.sql
 
 echo "Stopping all Docker containers..."
 docker stop $(docker ps -a -q);
@@ -10,14 +13,15 @@ echo "Pulling down php and mysql docker images"
 docker pull nmcteam/php56;
 docker pull sameersbn/mysql;
 
-
 echo "Running sameersbn/mysql image and configuring the environment"
 docker run \
     -d \
     -v /var/lib/mysql \
-    -e "DB_NAME=demoDb" \
-    -e "DB_USER=demoUser" \
-    -e "DB_PASS=demoPass" \
+    -e "DB_NAME=cryodb" \
+    -e "DB_USER=user" \
+    -e "DB_PASS=pass" \
+    -e "DB_REMOTE_ROOT_NAME=root" \
+    -e "DB_REMOTE_ROOT_PASS=pass" \
     --name db \
     sameersbn/mysql;
 
@@ -32,7 +36,7 @@ docker run \
     nmcteam/php56;
 
 echo "Running some-content-nginx image, linking php and mysql,"
-echo "and exposing Docker container's port 80 to localhost's port 8080"
+echo "and exposing Docker container's port 80 to dockerhost's port 8080"
 
 echo "Building the Docker image..."
 docker build -t some-content-nginx .;
@@ -47,11 +51,16 @@ docker run \
     --name web \
     some-content-nginx;
 
-#This line starts the nginx service eventhough it should already be running,
-#fixes problems for Windows users
-#Note: the -l flag grabs the last docker container, if you add more containers
-#add them after this line
-docker exec -it $(docker ps -l --format "{{.ID}}") bash service nginx start    
 
+docker cp ./static/Data/cryodb.sql db:/var/lib/mysql/cryodb.sql
 
-echo "You may now navigate to Local Host 8080"
+#Assures that the mysql server starts before we try to restore it
+docker exec -it db /etc/init.d/mysql start
+
+#Restoring mysql database with backedup data
+docker exec db /bin/sh -c "mysql cryodb < /var/lib/mysql/cryodb.sql"
+
+#Starts the nginx service, fixes problems for Windows users  
+docker exec -it web bash service nginx start
+
+echo "You may now navigate to docker host 8080"
